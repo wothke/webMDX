@@ -6,13 +6,6 @@ setlocal enabledelayedexpansion
 SET ERRORLEVEL
 VERIFY > NUL
 
-
-:: getopt.c getopt1.c mdx2151.c mdxfile.c mdxmml_ym2151.c pcm8.c pdxfile.c ym2151.c
-::call emcc.bat %OPT% ../src/mdxplaygetopt.c ../src/mdxplaygetopt1.c ../src/mdxplaymdx2151.c ../src/mdxplaymdxfile.c ../src/mdxplaymdxmml_ym2151.c ../src/mdxplaypcm8.c ../src/mdxplaypdxfile.c ../src/mdxplayym2151.c ../src/mdxplaymdxopl3.c ../src/mdxplaymdxmml_opl3.c ../src/mdxplayioaccess.c ../src/main.c  -o built/mdxplay.bc
-
-
- 
-:: CAN_HANDLE_OPL3) || defined(HAVE_SUPPORT_DMFM
 :: **** use the "-s WASM" switch to compile WebAssembly output. warning: the SINGLE_FILE approach does NOT currently work in Chrome 63.. ****
 set "OPT= -s WASM=0 -s ASSERTIONS=1 -s VERBOSE=0 -s FORCE_FILESYSTEM=1 -DEMSCRIPTEN -DNO_DEBUG_LOGS -DHAVE_LIMITS_H -DHAVE_STDINT_H -Wcast-align -fno-strict-aliasing -s SAFE_HEAP=1 -s DISABLE_EXCEPTION_CATCHING=0 -Wno-pointer-sign -I. -I.. -I../zlib -I../mdxmini/src/ -I../pmdmini/src/pmdwin/ -I../pmdmini/src/fmgen/ -I../src/device -Os -O3 "
 
@@ -22,7 +15,6 @@ if not exist "built/pmdmini.bc" (
 	IF !ERRORLEVEL! NEQ 0 goto :END
 )
 
-:: FIXME add OPL3 stuff?
 if not exist "built/mdxmini.bc" (
 	call emcc.bat %OPT% ../mdxmini/src/mdx2151.c ../mdxmini/src/mdxfile.c ../mdxmini/src/mdxmini.c ../mdxmini/src/mdxmml_ym2151.c ../mdxmini/src/pcm8.c ../mdxmini/src/pdxfile.c ../mdxmini/src/ym2151.c -o built/mdxmini.bc
 	IF !ERRORLEVEL! NEQ 0 goto :END
