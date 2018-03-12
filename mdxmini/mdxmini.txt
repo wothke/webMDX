@@ -1,0 +1,83 @@
+
+mdxmini 2014-06-01
+
+説明:
+mdxminiは、mdxplay-070206をライブラリとして利用できるようにしたものです。
+mdxplayからOPL3の部分などのハードウェア依存部分を削除し、
+PCMの生成に特化することで、環境に依存せずに利用できます。
+
+利用方法:
+サンプルのmdxplayを参照してください。
+makeを実行するとSDLを利用した簡易プレイヤーをビルドできます。
+
+ライセンス:
+GPL2になります。詳細はCOPYINGを参照してください。
+このライブラリに動的、または静的にリンクした場合、GPL2に従う必要があります。
+他のソースコードと組み合わせる際には十分に注意してください。
+
+履歴:
+2014-06-01
+バグフィックス。
+NLG出力の高速化。
+	
+2014-05-27
+NLG出力機能の追加。
+ソースコードとMakefileの整備。
+MSYS環境でのコンパイルを可能に。
+
+2011-11-15
+pdxファイルを読み出せないときにテンポが正しくなくなる不具合を修正
+ソースコードのクリーニング
+
+2011-10-22
+pdxファイルが正しく読み出せない問題を修正(pdxfile.c)
+
+2011-10-10
+ファイル構成の変更
+
+---------
+Contact : BouKiCHi 
+Blog : http://clogging.blog57.fc2.com/
+
+------------------------------ google translate ---------------------------
+
+mdxmini 2014-06-01
+
+Description:
+mdxmini makes mdxplay-070206 available as a library.
+Delete the hardware dependent part such as the part of OPL 3 from mdxplay,
+By specializing in PCM generation, it can be used independent of the environment.
+
+How to Use:
+See the sample mdxplay.
+By running make, you can build a simple player using SDL.
+
+license:
+It becomes GPL2. For details, see COPYING.
+If you dynamically or statically link to this library, you need to follow GPL 2.
+Please be careful when combining with other source code.
+
+History:
+2014-06-01
+Bug fixes.
+Speed up NLG output.
+In case
+2014-05-27
+Added NLG output function.
+Maintenance of source code and Makefile.
+Make it compile in MSYS environment.
+
+2011-11-15
+Fixed a bug that tempo became incorrect when pdx file could not be read
+Cleaning the source code
+
+2011-10-22
+Fixed problem that pdx file could not be read correctly (pdxfile.c)
+
+2011-10-10
+Change file composition
+
+---------
+Contact: BouKiCHi
+Blog: http://clogging.blog57.fc2.com/
+

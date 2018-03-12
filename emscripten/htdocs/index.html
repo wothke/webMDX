@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<!--
+ WebMDX: HTML5 Audio/JavaScript port of mdxmini & pmdmini
+
+ Copyright 
+  (C) 2018 Juergen Wothke
+
+ CREDITS 
+  milk.K, K.MAEKAWA, Missy.M - authors of the original X68000 MXDRV
+  Daisuke Nagano - author of the Unix mdxplay
+  KAJIHARA Mashahiro - original author of the PMD sound driver for PC-9801
+  AGAWA Koji - Maintainer of PMDXMMS, on which pmdmini was based
+  M88 / cisc - author of OPNA FM sound generator 
+  BouKiCHi - author of the mdxmini&pmdmini library
+  Misty De Meo - bugfixes and improvements to mdxmini&pmdmini
+
+ LICENSE
+  The code builds on FM Sound Generator with OPN/OPM interface Copyright (C) by cisc.
+  As the author of FM Sound Generator states (see readme.txt in "fmgen" sub-folder), this is free software but 
+  for any commercial application the prior consent of the author is explicitly required. So it  
+  cannot be GPL.. and the GPL claims made in the pdmmini project are probably just invalid. 
+-->
+<meta http-equiv="X-UA-Compatible" content="chrome=1" />
+<title>WebMDX - a MDX/PDM music player for the Web</title>
+
+<meta name="description" content="Experimental JavaScript version of mdxmini/pmdmini supports playback of recorded .mdx and .m files">
+<meta name="author" content="Juergen Wothke">
+<meta name="keywords" content="Web Audio API, HTML5, JavaScript">
+
+<link href="stdlib/font.css" rel="stylesheet" type="text/css">
+<link href="stdlib/common.css" rel="stylesheet" type="text/css">
+<link href="add_on.css" rel="stylesheet" type="text/css">
+
+<link rel="image_src" href="screenshot.gif" />
+<meta property="og:image" content="http://www.wothke.ch/webMDX/screenshot.gif" />
+
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+<link type="image/x-icon" href="favicon.ico" />
+
+<script type="text/javascript" src="stdlib/jquery1.11.min.js"></script>
+<script type="text/javascript" src="stdlib/jquery.details.min.js"></script>
+<script type="text/javascript" src="stdlib/scriptprocessor_player.min.js"></script>
+
+<script>window.openDetails=false;</script>
+<script type="text/javascript" src="stdlib/mini_display.js"></script>
+<script type="text/javascript" src="stdlib/mini_controls.js"></script>
+
+<script type="text/javascript" src="backend_mdx.js"></script>
+<script>
+var playerControls;
+var	songDisplay;
+	
+// configure what music infos to display in SongDisplay
+MDXDisplayAccessor = (function(){ var $this = function (doGetSongInfo) {
+		$this.base.call(this, doGetSongInfo);
+	}; 
+	extend(DisplayAccessor, $this, {
+		getDisplayTitle: function() 	{ return "webMDX";},
+		getDisplaySubtitle: function() 	{ return "日本のゲーム音楽";},
+		getDisplayLine1: function() { return this.getSongInfo().title; },
+		getDisplayLine2: function() { return this.getSongInfo().artist; },
+		getDisplayLine3: function() { return ""; }
+	});	return $this; })();
+	
+// link player events to "controls" and "display"
+function doOnTrackEnd(){
+	if (playerControls) playerControls.playNextSong();
+}
+function doOnTrackReadyToPlay(){ 	
+	ScriptNodePlayer.getInstance().play();
+	songDisplay.redrawSongInfo();
+}
+// depending on the browser/timing the player may be ready before or after (see WASM) init(), i.e.
+// the startup sequence must handle both cases (music can only be started when
+// both the player is ready and init() has been completed..)
+var playerReady= false;		
+function doOnPlayerReady() {
+	playerReady= true;
+	if (playerControls) playerControls.playNextSong(); // playerControls are used to check for init()
+}
+
+function init() {
+	// --------------------------- music player -----------------------
+	var basePath= '';		// not needed here
+	ScriptNodePlayer.createInstance(new MDXBackendAdapter(), basePath, [], true, doOnPlayerReady,
+										doOnTrackReadyToPlay, doOnTrackEnd);
+		
+	// --------------------------- UI - basic player controls --------------
+	var songs = [
+		// play some files directly off modland:
+		'mod_proxy.php?mod=PMD/Shiori%20Ueno/Kotohigaoka%20Story/m001.m',
+		'mod_proxy.php?mod=PMD/- unknown/Advanced Variable Geo 2/avg2ayb.m',
+		'mod_proxy.php?mod=PMD/- unknown/Xenon - Fantasy Body (OPN2)/xen01-t.m',
+		'mod_proxy.php?mod=PMD/- unknown/Brandish 1/br1-01.m',
+		'mod_proxy.php?mod=MDX/- unknown/Green Beret/grba.mdx',
+		'mod_proxy.php?mod=MDX/- unknown/Final Fantasy 5/ff5a101.mdx',
+		'mod_proxy.php?mod=MDX/- unknown/Final Fantasy 1/ff1-01.mdx',
+		'mod_proxy.php?mod=MDX/- unknown/Marble Madness/mbl07.mdx',
+	];
+	playerControls= new BasicPlayerControls(songs, true, false,
+				(function(someSong) {
+						var arr= someSong.split(";");					
+						var track= arr.length>1?parseInt(arr[1]):-1;
+						var timeout= arr.length>2?parseInt(arr[2]):-1;
+
+						var options= {};
+						options.track= isNaN(track) ? -1 : track;
+						options.timeout= isNaN(timeout) ? -1 : timeout;
+						return [arr[0], options];
+					})
+				);
+
+	songDisplay= new SongDisplay(new MDXDisplayAccessor((function(){return playerControls.getSongInfo();})), 
+								[0x505050,0xffffff,0x404040,0xffffff], 1, 1, (function(){playerControls.animate()}));
+
+	if (playerReady) playerControls.playNextSong();	// player was ready before it could trigger the playback
+}
+</script>
+<script type="text/javascript" src="stdlib/analytics.js"></script>
+</head>
+
+<body onload="init();">
+<div class="tooltip" id="tooltip" alt= "This is a hobby project, but it costs not only time to regularily maintain this site but also money to pay for the internet service provider (etc). If you want to keep this site up and running.. or if you just like my work (see https://jwothke.wordpress.com/) and you'd like to see more of it in the future, please make a contribution. Thank you!"></div>
+
+<details>
+  <summary>What's this?</summary>
+  <div>
+  <p>WebMDX: Experimental JavaScript/HTML5 version of <a href="https://github.com/mistydemeo/mdxmini" target="_blank">mdxmini</a> and 
+  <a href="https://github.com/mistydemeo/pmdmini" target="_blank">pdmmini</a>. 
+</p>
+ <p>The respective PC-98 / X68000 computers where largely a Japanse phenomenon and few people outside of Japan may ever have heard of them. 
+ However for the time the used Yamaha sound chips were actually pretty good.</p>
+ 
+  <p>Bring your own .m and .mdx files by dropping them on the Japanese painting. Respective files can be found for example on 
+  <a href="https://ftp.modland.com/pub/modules/PMD/" target="_blank">modland.com</a>.</p>
+ 
+  <p>2018 by Juergen Wothke  (The source code can be found <a target="_blank" href="https://github.com/wothke/">here</a>.)</p>
+ 
+  
+  <p>This page does not use any plugins but is based exclusively on the WebAudio API. The audio samples here 
+  are completely calculated within JavaScript by running the mdxmini/pdmmini emulator logic.</p>
+ 
+  <p>Please use the below controls to navigate between the songs that you have dropped on the player:
+  <span id="controls"></span>
+ </div>
+</details>
+<aside></aside>
+<section>
+  <div id="logo">
+		<!-- in new Chrome the SHIT reflections disapear dependig on the canvas height.. what a fucking joke -->
+		<div id="moz-reflect-logo"><canvas  id="logoCanvas"  width="450" height="100"></canvas></div>	
+  </div>
+  
+  <div id="spectrum" >
+		<!-- use "hight" greater than 80 and the fucking reflection is gone.. FUCK YOU IDIOTS -->
+		<div id="moz-reflect-spectrum"><canvas id="spectrumCanvas" width="800" height="80"></canvas></div>
+  </div>
+  <div id="drop" class="drop"><img src="TravelersOnHorseback.gif"/></div><!--see BasicPlayerControls-->
+</section>
+</body>
+</html>
