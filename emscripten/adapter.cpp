@@ -41,13 +41,13 @@ extern "C" {
 #include "../pmdmini/src/pmdmini.h"
 }
 
-
+/*
 #ifdef EMSCRIPTEN
 #define EMSCRIPTEN_KEEPALIVE __attribute__((used))
 #else
 #define EMSCRIPTEN_KEEPALIVE
 #endif
-
+*/
 
 // hack to pass all those japaneese info texts safely to the JavaScript side:
 static const std::string chars = 
@@ -87,6 +87,7 @@ std::string base64_encode(unsigned char* input, unsigned int len) {
       ret += '=';
 	}
   }
+  
   return ret;
 }
 

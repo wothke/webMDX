@@ -17,7 +17,7 @@ allows playing back music written using PMD."
 
  
 This plugin is designed to work with my generic WebAudio ScriptProcessor music player (see separate project)
-but the API exposed by the lib can be used in any JavaScipt program (it should look familiar to anyone 
+but the API exposed by the lib can be used in any JavaScript program (it should look familiar to anyone 
 that has ever done some sort of music player plugin). 
 
 
